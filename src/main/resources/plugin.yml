@@ -1,9 +1,11 @@
-name: NickPlugin
-main: com.example.nickplugin.NickPlugin
-version: 1.1
-api-version: 1.13
+name: SimpleNick
+main: com.example.simplenick.SimpleNick
+version: 1.0
 commands:
   nick:
-    description: Change your nickname or reset it.
-    usage: /nick <newNickname> or /nick reset
-    permission: nickplugin.use
+    description: Changes your nickname.
+    usage: /nick <nickname> | /nick reset
+permissions:
+  simplenick.use:
+    description: Allows players to change their nickname
+    default: true
