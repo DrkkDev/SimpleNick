@@ -1,25 +1,25 @@
-package com.example.nickplugin;
+package com.example.simplenick;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class NickPlugin extends JavaPlugin implements CommandExecutor {
+public class SimpleNick extends JavaPlugin implements CommandExecutor {
 
     @Override
     public void onEnable() {
         // Register the /nick command
         this.getCommand("nick").setExecutor(this);
-        getLogger().info("NickPlugin has been enabled!");
+        getLogger().info("SimpleNick plugin enabled!");
     }
 
     @Override
     public void onDisable() {
-        getLogger().info("NickPlugin has been disabled.");
+        getLogger().info("SimpleNick plugin disabled!");
     }
 
     @Override
@@ -32,20 +32,14 @@ public class NickPlugin extends JavaPlugin implements CommandExecutor {
         Player player = (Player) sender;
 
         // Check if the player has the required permission
-        if (!player.hasPermission("nickplugin.use")) {
+        if (!player.hasPermission("simplenick.use")) {
             player.sendMessage(ChatColor.RED + "You don't have permission to use this command.");
             return true;
         }
 
-        // Check if arguments are provided
-        if (args.length == 0) {
-            player.sendMessage(ChatColor.RED + "Usage: /nick <nickname> or /nick reset");
-            return true;
-        }
-
         // Check if the player wants to reset their nickname
-        if (args[0].equalsIgnoreCase("reset")) {
-            player.setDisplayName(player.getName()); // Reset to original name
+        if (args.length > 0 && args[0].equalsIgnoreCase("reset")) {
+            player.setDisplayName(player.getName());
             player.sendMessage(ChatColor.YELLOW + "Nickname reset to default.");
             Bukkit.broadcastMessage(ChatColor.YELLOW + player.getName() + " has reset their nickname.");
             return true;
@@ -60,12 +54,15 @@ public class NickPlugin extends JavaPlugin implements CommandExecutor {
         // Apply color codes using '&' as the color code symbol
         String finalNickname = ChatColor.translateAlternateColorCodes('&', nickname.toString().trim());
 
-        // Set the player's display name (LPC will pick this up)
+        // Set the player's display name
         player.setDisplayName(finalNickname);
 
-        // Send confirmation messages
+        // Debugging message to confirm nickname set
         player.sendMessage(ChatColor.GREEN + "Your nickname has been set to: " + finalNickname);
         Bukkit.broadcastMessage(ChatColor.YELLOW + player.getName() + " is now known as " + finalNickname);
+        
+        // Debugging check: Log the nickname to console
+        getLogger().info(player.getName() + " display name is now set to: " + player.getDisplayName());
 
         return true;
     }
