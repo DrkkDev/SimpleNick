@@ -53,7 +53,7 @@ Resets your name to your original player name.
 
 ## Contribution
 
-If you want to contribute to the project please open a [Pull Request](https://github.com/YoImDark/SimpleNick/pulls)
+If you want to collaborate please open a [Pull Request](https://github.com/YoImDark/SimpleNick/pulls)
 
 ## License
 
