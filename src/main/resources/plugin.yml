@@ -1,9 +1,10 @@
 name: SimpleNick
-main: com.yourname.simplenick.SimpleNick
+main: com.dark.simplenick.SimpleNick
 version: 1.0
+description: A simple plugin to set nicknames.
 api-version: 1.16
+
 commands:
   nick:
-    description: Change your display nickname
+    description: Changes your nickname
     usage: /nick <nickname> or /nick reset
-    permission: simplenick.use
