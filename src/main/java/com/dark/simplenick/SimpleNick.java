@@ -15,6 +15,11 @@ public class SimpleNick extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         getLogger().info("SimpleNick has been enabled!");
+
+        // Save default config if it doesn't exist
+        saveDefaultConfig();
+
+        // Register chat listener and commands
         getServer().getPluginManager().registerEvents(this, this);
     }
 
@@ -25,6 +30,17 @@ public class SimpleNick extends JavaPlugin implements Listener {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (command.getName().equalsIgnoreCase("nickreload")) {
+            if (!sender.hasPermission("simplenick.reload")) {
+                sender.sendMessage(ChatColor.RED + "You do not have permission to reload SimpleNick.");
+                return true;
+            }
+
+            reloadConfig();
+            sender.sendMessage(ChatColor.GREEN + "SimpleNick configuration reloaded.");
+            return true;
+        }
+
         if (command.getName().equalsIgnoreCase("nick")) {
             if (!(sender instanceof Player) && args.length < 2) {
                 sender.sendMessage("This command can only be used by players.");
@@ -35,7 +51,6 @@ public class SimpleNick extends JavaPlugin implements Listener {
             String nickname;
             boolean isTargetingOtherPlayer = args.length > 1 && sender.hasPermission("simplenick.others");
 
-            // Determine target and nickname based on args
             if (isTargetingOtherPlayer) {
                 target = Bukkit.getPlayer(args[0]);
                 nickname = String.join(" ", args).substring(args[0].length()).trim();
@@ -49,7 +64,6 @@ public class SimpleNick extends JavaPlugin implements Listener {
                 nickname = args[0];
             }
 
-            // Check for "reset" command
             if (nickname.equalsIgnoreCase("reset")) {
                 target.setDisplayName(target.getName());
                 target.setPlayerListName(target.getName());
@@ -58,7 +72,6 @@ public class SimpleNick extends JavaPlugin implements Listener {
                 return true;
             }
 
-            // Validate nickname: strip color codes and check length and content
             String strippedNickname = ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', nickname));
 
             if (strippedNickname.length() < 2 || strippedNickname.length() > 16) {
@@ -70,7 +83,6 @@ public class SimpleNick extends JavaPlugin implements Listener {
                 return true;
             }
 
-            // Apply color codes and set nickname
             String finalNickname = ChatColor.translateAlternateColorCodes('&', nickname);
             target.setDisplayName(finalNickname);
             target.setPlayerListName(finalNickname);
@@ -84,7 +96,6 @@ public class SimpleNick extends JavaPlugin implements Listener {
         return false;
     }
 
-    // Listener to ensure display name is used in chat
     @EventHandler
     public void onPlayerChat(AsyncPlayerChatEvent event) {
         Player player = event.getPlayer();
