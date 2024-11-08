@@ -1,16 +1,15 @@
-package com.dark.simplenick;
-
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 
-public class SimpleNick extends JavaPlugin {
+public class SimpleNick extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
         getLogger().info("SimpleNick has been enabled!");
+        getServer().getPluginManager().registerEvents(this, this);
     }
 
     @Override
@@ -18,6 +17,16 @@ public class SimpleNick extends JavaPlugin {
         getLogger().info("SimpleNick has been disabled!");
     }
 
+    @EventHandler
+    public void onPlayerChat(AsyncPlayerChatEvent event) {
+        Player player = event.getPlayer();
+        String displayName = player.getDisplayName();
+        String message = event.getMessage();
+        
+        // Set the chat format using the display name
+        event.setFormat(displayName + ChatColor.RESET + ": " + message);
+    }
+    
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
