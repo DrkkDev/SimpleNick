@@ -1,4 +1,12 @@
 # Configuration for SimpleNick Plugin
+
+# Enable or disable the SimpleNick plugin without uninstalling it
+enabled: true
+
+# Toggle support for color codes (using LPC) in nicknames
+colors: true
+
+# List of ranks allowed to use the /nick command
 allowed_ranks:
   - "admin"
   - "moderator"
