@@ -10,16 +10,28 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.List;
+
 public class SimpleNick extends JavaPlugin implements Listener {
+
+    private boolean colorsEnabled;
 
     @Override
     public void onEnable() {
-        getLogger().info("SimpleNick has been enabled!");
-
-        // Save default config if it doesn't exist
+        // Load configuration
         saveDefaultConfig();
 
-        // Register chat listener and commands
+        // Check if the plugin is enabled in the config
+        if (!getConfig().getBoolean("enabled")) {
+            getLogger().warning("SimpleNick is disabled in the config. Disabling plugin...");
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
+
+        // Load color configuration setting
+        colorsEnabled = getConfig().getBoolean("colors", true);
+
+        getLogger().info("SimpleNick has been enabled!");
         getServer().getPluginManager().registerEvents(this, this);
     }
 
@@ -37,6 +49,7 @@ public class SimpleNick extends JavaPlugin implements Listener {
             }
 
             reloadConfig();
+            colorsEnabled = getConfig().getBoolean("colors", true);
             sender.sendMessage(ChatColor.GREEN + "SimpleNick configuration reloaded.");
             return true;
         }
@@ -73,7 +86,6 @@ public class SimpleNick extends JavaPlugin implements Listener {
             }
 
             String strippedNickname = ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', nickname));
-
             if (strippedNickname.length() < 2 || strippedNickname.length() > 16) {
                 sender.sendMessage("Nickname must be between 2 and 16 characters long.");
                 return true;
@@ -83,7 +95,8 @@ public class SimpleNick extends JavaPlugin implements Listener {
                 return true;
             }
 
-            String finalNickname = ChatColor.translateAlternateColorCodes('&', nickname);
+            // Apply color codes only if colors are enabled
+            String finalNickname = colorsEnabled ? ChatColor.translateAlternateColorCodes('&', nickname) : strippedNickname;
             target.setDisplayName(finalNickname);
             target.setPlayerListName(finalNickname);
             target.sendMessage("Your nickname has been changed to: " + finalNickname);
