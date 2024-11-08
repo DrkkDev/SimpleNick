@@ -1,0 +1,9 @@
+name: SimpleNick
+main: com.yourname.simplenick.SimpleNick
+version: 1.0
+api-version: 1.16
+commands:
+  nick:
+    description: Change your display nickname
+    usage: /nick <nickname> or /nick reset
+    permission: simplenick.use
