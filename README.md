@@ -32,7 +32,7 @@ The `SimpleNick` folder is created on first load, with a `config.yml` file insid
   - "moderator"
 ```
 
-This list determines which LuckPerms ranks can use `/nick`.
+This list determines which LuckPerms ranks can use `/nick` (in this exemple: `admin` and `moderator` can use the `/nick` command).
 
 ## Commands
 
