@@ -33,15 +33,21 @@ public class SimpleNick extends JavaPlugin {
             }
 
             if (args[0].equalsIgnoreCase("reset")) {
+                // Reset to original name
                 player.setDisplayName(player.getName());
+                player.setPlayerListName(player.getName());
                 player.sendMessage("Nickname reset to your original name.");
             } else {
+                // Join the arguments to create the nickname
                 String nickname = String.join(" ", args);
+            
+                // Set both display and player list name
                 player.setDisplayName(nickname);
+                player.setPlayerListName(nickname);
                 player.sendMessage("Your nickname has been changed to: " + nickname);
             }
             return true;
         }
         return false;
     }
-}
+    
