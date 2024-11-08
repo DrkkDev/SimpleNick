@@ -1,10 +1,19 @@
 name: SimpleNick
 main: com.dark.simplenick.SimpleNick
 version: 1.2
-description: A simple plugin to set nicknames.
-api-version: 1.16
-
 commands:
   nick:
-    description: Changes your nickname
-    usage: /nick <nickname> or /nick reset
+    description: Change your nickname or reset it.
+  nickreload:
+    description: Reloads the SimpleNick configuration.
+    permission: simplenick.reload
+permissions:
+  simplenick.use:
+    description: Allows a player to use /nick.
+    default: true
+  simplenick.others:
+    description: Allows a player to change other players' nicknames.
+    default: op
+  simplenick.reload:
+    description: Allows a player to reload the SimpleNick configuration.
+    default: op
