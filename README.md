@@ -51,6 +51,10 @@ Example: `/nick &bBlueSky` sets your nickname to `BlueSky` in sky blue.
 - **Reset Nickname**: `/nick reset`
 Resets your name to your original player name.
 
+## Contribution
+
+If you want to contribute to the project please open a [Pull Request](https://github.com/YoImDark/SimpleNick/pulls)
+
 ## License
 
 This project is open-source and isn't licensed.
