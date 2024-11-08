@@ -1,81 +1,107 @@
-@Override
-public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-    // Check if the plugin is enabled in the configuration
-    if (!getConfig().getBoolean("enabled")) {
-        sender.sendMessage(ChatColor.RED + "SimpleNick is currently disabled by the configuration.");
-        return true;
+package com.dark.simplenick;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.plugin.java.JavaPlugin;
+
+public class SimpleNick extends JavaPlugin implements Listener {
+
+    @Override
+    public void onEnable() {
+        getLogger().info("SimpleNick has been enabled!");
+
+        // Save default config if it doesn't exist
+        saveDefaultConfig();
+
+        // Register chat listener and commands
+        getServer().getPluginManager().registerEvents(this, this);
     }
 
-    if (command.getName().equalsIgnoreCase("nickreload")) {
-        if (!sender.hasPermission("simplenick.reload")) {
-            sender.sendMessage(ChatColor.RED + "You do not have permission to reload SimpleNick.");
-            return true;
-        }
-
-        reloadConfig();
-        sender.sendMessage(ChatColor.GREEN + "SimpleNick configuration reloaded.");
-        return true;
+    @Override
+    public void onDisable() {
+        getLogger().info("SimpleNick has been disabled!");
     }
 
-    if (command.getName().equalsIgnoreCase("nick")) {
-        if (!(sender instanceof Player) && args.length < 2) {
-            sender.sendMessage("This command can only be used by players.");
-            return true;
-        }
-
-        Player target;
-        String nickname;
-        boolean isTargetingOtherPlayer = args.length > 1 && sender.hasPermission("simplenick.others");
-
-        if (isTargetingOtherPlayer) {
-            target = Bukkit.getPlayer(args[0]);
-            nickname = String.join(" ", args).substring(args[0].length()).trim();
-
-            if (target == null) {
-                sender.sendMessage("Player not found.");
+    @Override
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (command.getName().equalsIgnoreCase("nickreload")) {
+            if (!sender.hasPermission("simplenick.reload")) {
+                sender.sendMessage(ChatColor.RED + "You do not have permission to reload SimpleNick.");
                 return true;
             }
-        } else {
-            target = (Player) sender;
-            nickname = args[0];
-        }
 
-        if (nickname.equalsIgnoreCase("reset")) {
-            target.setDisplayName(target.getName());
-            target.setPlayerListName(target.getName());
-            target.sendMessage("Your nickname has been reset.");
-            if (isTargetingOtherPlayer) sender.sendMessage("Nickname has been reset for " + target.getName() + ".");
+            reloadConfig();
+            sender.sendMessage(ChatColor.GREEN + "SimpleNick configuration reloaded.");
             return true;
         }
 
-        // Validate nickname length after removing color codes if colors are enabled
-        boolean colorsEnabled = getConfig().getBoolean("colors", true);
-        String strippedNickname = colorsEnabled 
-            ? ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', nickname)) 
-            : nickname;
+        if (command.getName().equalsIgnoreCase("nick")) {
+            if (!(sender instanceof Player) && args.length < 2) {
+                sender.sendMessage("This command can only be used by players.");
+                return true;
+            }
 
-        if (strippedNickname.length() < 2 || strippedNickname.length() > 16) {
-            sender.sendMessage("Nickname must be between 2 and 16 characters long.");
+            Player target;
+            String nickname;
+            boolean isTargetingOtherPlayer = args.length > 1 && sender.hasPermission("simplenick.others");
+
+            if (isTargetingOtherPlayer) {
+                target = Bukkit.getPlayer(args[0]);
+                nickname = String.join(" ", args).substring(args[0].length()).trim();
+
+                if (target == null) {
+                    sender.sendMessage("Player not found.");
+                    return true;
+                }
+            } else {
+                target = (Player) sender;
+                nickname = args[0];
+            }
+
+            if (nickname.equalsIgnoreCase("reset")) {
+                target.setDisplayName(target.getName());
+                target.setPlayerListName(target.getName());
+                target.sendMessage("Your nickname has been reset.");
+                if (isTargetingOtherPlayer) sender.sendMessage("Nickname has been reset for " + target.getName() + ".");
+                return true;
+            }
+
+            String strippedNickname = ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', nickname));
+
+            if (strippedNickname.length() < 2 || strippedNickname.length() > 16) {
+                sender.sendMessage("Nickname must be between 2 and 16 characters long.");
+                return true;
+            }
+            if (!strippedNickname.matches("^[a-zA-Z0-9]+$")) {
+                sender.sendMessage("Nickname can only contain alphanumeric characters, without spaces.");
+                return true;
+            }
+
+            String finalNickname = ChatColor.translateAlternateColorCodes('&', nickname);
+            target.setDisplayName(finalNickname);
+            target.setPlayerListName(finalNickname);
+            target.sendMessage("Your nickname has been changed to: " + finalNickname);
+
+            if (isTargetingOtherPlayer) {
+                sender.sendMessage("Nickname has been changed for " + target.getName() + " to: " + finalNickname);
+            }
             return true;
         }
-        if (!strippedNickname.matches("^[a-zA-Z0-9]+$")) {
-            sender.sendMessage("Nickname can only contain alphanumeric characters, without spaces.");
-            return true;
-        }
-
-        // Apply color codes only if colors are enabled
-        String finalNickname = colorsEnabled 
-            ? ChatColor.translateAlternateColorCodes('&', nickname) 
-            : nickname;
-            
-        target.setDisplayName(finalNickname);
-        target.setPlayerListName(finalNickname);
-        target.sendMessage("Your nickname has been changed to: " + finalNickname);
-
-        if (isTargetingOtherPlayer) {
-            sender.sendMessage("Nickname has been changed for " + target.getName() + " to: " + finalNickname);
-        }
-        return true;
+        return false;
     }
-    return false;
+
+    @EventHandler
+    public void onPlayerChat(AsyncPlayerChatEvent event) {
+        Player player = event.getPlayer();
+        String displayName = player.getDisplayName();
+        String message = event.getMessage();
+
+        event.setFormat(displayName + ChatColor.RESET + ": " + message);
+    }
 }
