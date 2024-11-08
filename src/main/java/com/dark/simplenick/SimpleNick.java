@@ -1,5 +1,6 @@
 package com.dark.simplenick;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -33,15 +34,11 @@ public class SimpleNick extends JavaPlugin {
             }
 
             if (args[0].equalsIgnoreCase("reset")) {
-                // Reset to original name
                 player.setDisplayName(player.getName());
                 player.setPlayerListName(player.getName());
                 player.sendMessage("Nickname reset to your original name.");
             } else {
-                // Join the arguments to create the nickname
-                String nickname = String.join(" ", args);
-            
-                // Set both display and player list name
+                String nickname = ChatColor.translateAlternateColorCodes('&', String.join(" ", args));
                 player.setDisplayName(nickname);
                 player.setPlayerListName(nickname);
                 player.sendMessage("Your nickname has been changed to: " + nickname);
@@ -50,4 +47,4 @@ public class SimpleNick extends JavaPlugin {
         }
         return false;
     }
-    
+}
