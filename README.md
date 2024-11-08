@@ -34,16 +34,16 @@ The `SimpleNick` folder is created on first load, with a `config.yml` file insid
 
 This list determines which LuckPerms ranks can use `/nick`.
 
-# Commands
+## Commands
 
 - `/nick <nickname>` — Sets your display name.
 - `/nick reset` — Resets your display name.
 
-# Permissions
+## Permissions
 - `simplenick.use` — Allows use of `/nick`.
 - Use **LuckPerms** to manage permissions based on `allowed_ranks` in `config.yml`.
 
-# Usage
+## Usage
 
 - **Change Nickname**: `/nick <nickname>`
 Example: `/nick &bBlueSky` sets your nickname to `BlueSky` in sky blue.
@@ -51,6 +51,6 @@ Example: `/nick &bBlueSky` sets your nickname to `BlueSky` in sky blue.
 - **Reset Nickname**: `/nick reset`
 Resets your name to your original player name.
 
-# License
+## License
 
 This project is open-source and isn't licensed.
