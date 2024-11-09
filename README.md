@@ -19,4 +19,4 @@ Use `/nickhelp` to have the list of the commands of the plugin.
 
 ## Contribution
 
-If you want to collaborate please open a [Pull Request](https://github.com/DrkkDev/SimpleNick/pulls)
+If you want to collaborate please open a **[Pull Request](https://github.com/DrkkDev/SimpleNick/pulls)**
