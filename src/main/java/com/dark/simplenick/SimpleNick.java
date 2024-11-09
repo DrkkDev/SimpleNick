@@ -28,10 +28,6 @@ public class SimpleNick extends JavaPlugin implements Listener {
         colorsEnabled = getConfig().getBoolean("colors", true);
         pluginEnabled = getConfig().getBoolean("enabled", true);
 
-        if (!pluginEnabled) {
-            getLogger().info("SimpleNick is disabled in the config. Disabling plugin functionality.");
-        }
-
         getServer().getPluginManager().registerEvents(this, this);
         getLogger().info("SimpleNick has been enabled!");
     }
@@ -54,7 +50,6 @@ public class SimpleNick extends JavaPlugin implements Listener {
             boolean wasPluginEnabled = pluginEnabled;
             pluginEnabled = getConfig().getBoolean("enabled", true);
 
-            // Remove colors if colors are disabled after reload
             if (!colorsEnabled) {
                 for (Player player : Bukkit.getOnlinePlayers()) {
                     String strippedNickname = ChatColor.stripColor(player.getDisplayName());
@@ -63,7 +58,6 @@ public class SimpleNick extends JavaPlugin implements Listener {
                 }
             }
 
-            // Reset all nicknames if plugin is disabled, or restore them if re-enabled
             if (!pluginEnabled && wasPluginEnabled) {
                 for (Player player : Bukkit.getOnlinePlayers()) {
                     originalNicknames.put(player, player.getDisplayName());
@@ -93,6 +87,11 @@ public class SimpleNick extends JavaPlugin implements Listener {
         }
 
         if (command.getName().equalsIgnoreCase("nick")) {
+            if (!pluginEnabled) {
+                sender.sendMessage(ChatColor.RED + "Nicknames are currently disabled by the server.");
+                return true;
+            }
+
             if (args.length == 0) {
                 sender.sendMessage(ChatColor.RED + "Missing arguments. Use /nick <nickname> or /nickhelp for usage.");
                 return true;
