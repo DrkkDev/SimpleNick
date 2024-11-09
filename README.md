@@ -16,6 +16,10 @@ SimpleNick is a lightweight Bukkit plugin that lets players change their display
 3. Ensure **Vault**, **LuckPerms**, and **LPC** plugins are also installed in `plugins`.
 4. Start or restart your server to load the plugin.
 
+## Use
+
+Use `/nickhelp` to have the list of the commands of the plugin.
+
 ## Contribution
 
 If you want to collaborate please open a [Pull Request](https://github.com/DrkkDev/SimpleNick/pulls)
