@@ -5,9 +5,7 @@ SimpleNick is a lightweight Bukkit plugin that lets players change their display
 ## Requirements
 
 - Paper server (1.16 or higher)
-- Vault plugin
-- LuckPerms plugin
-- LPC plugin for color codes in nicknames
+- Vault, Luckperms & LPC Chat Formatter plugins
 
 ## Installation
 
