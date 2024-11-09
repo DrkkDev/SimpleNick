@@ -10,29 +10,30 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class SimpleNick extends JavaPlugin implements Listener {
 
     private boolean colorsEnabled;
+    private boolean pluginEnabled;
+    private final Map<Player, String> originalNicknames = new HashMap<>();
 
     @Override
     public void onEnable() {
-        // Load configuration
         saveDefaultConfig();
 
-        // Check if the plugin is enabled in the config
-        if (!getConfig().getBoolean("enabled")) {
-            getLogger().warning("SimpleNick is disabled in the config. Disabling plugin...");
-            getServer().getPluginManager().disablePlugin(this);
-            return;
+        // Load configuration values
+        colorsEnabled = getConfig().getBoolean("colors", true);
+        pluginEnabled = getConfig().getBoolean("enabled", true);
+
+        if (!pluginEnabled) {
+            getLogger().info("SimpleNick is disabled in the config. Disabling plugin functionality.");
         }
 
-        // Load color configuration setting
-        colorsEnabled = getConfig().getBoolean("colors", true);
-
-        getLogger().info("SimpleNick has been enabled!");
         getServer().getPluginManager().registerEvents(this, this);
+        getLogger().info("SimpleNick has been enabled!");
     }
 
     @Override
@@ -50,13 +51,50 @@ public class SimpleNick extends JavaPlugin implements Listener {
 
             reloadConfig();
             colorsEnabled = getConfig().getBoolean("colors", true);
+            boolean wasPluginEnabled = pluginEnabled;
+            pluginEnabled = getConfig().getBoolean("enabled", true);
+
+            // Remove colors if colors are disabled after reload
+            if (!colorsEnabled) {
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    String strippedNickname = ChatColor.stripColor(player.getDisplayName());
+                    player.setDisplayName(strippedNickname);
+                    player.setPlayerListName(strippedNickname);
+                }
+            }
+
+            // Reset all nicknames if plugin is disabled, or restore them if re-enabled
+            if (!pluginEnabled && wasPluginEnabled) {
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    originalNicknames.put(player, player.getDisplayName());
+                    player.setDisplayName(player.getName());
+                    player.setPlayerListName(player.getName());
+                }
+            } else if (pluginEnabled && !wasPluginEnabled) {
+                for (Map.Entry<Player, String> entry : originalNicknames.entrySet()) {
+                    entry.getKey().setDisplayName(entry.getValue());
+                    entry.getKey().setPlayerListName(entry.getValue());
+                }
+                originalNicknames.clear();
+            }
+
             sender.sendMessage(ChatColor.GREEN + "SimpleNick configuration reloaded.");
             return true;
         }
 
+        if (command.getName().equalsIgnoreCase("nickhelp")) {
+            sender.sendMessage(ChatColor.AQUA + "SimpleNick Help:");
+            sender.sendMessage(ChatColor.AQUA + "/nick <nickname> - Set your nickname.");
+            sender.sendMessage(ChatColor.AQUA + "/nick <player> <nickname> - Set another player's nickname.");
+            sender.sendMessage(ChatColor.AQUA + "/nick <player> reset - Reset a player's nickname.");
+            sender.sendMessage(ChatColor.AQUA + "/nickreset - Reset your nickname.");
+            sender.sendMessage(ChatColor.AQUA + "/nickreload - Reload the plugin's configuration.");
+            return true;
+        }
+
         if (command.getName().equalsIgnoreCase("nick")) {
-            if (!(sender instanceof Player) && args.length < 2) {
-                sender.sendMessage("This command can only be used by players.");
+            if (args.length == 0) {
+                sender.sendMessage(ChatColor.RED + "Missing arguments. Use /nick <nickname> or /nickhelp for usage.");
                 return true;
             }
 
@@ -86,17 +124,22 @@ public class SimpleNick extends JavaPlugin implements Listener {
             }
 
             String strippedNickname = ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', nickname));
-            if (strippedNickname.length() < 2 || strippedNickname.length() > 16) {
-                sender.sendMessage("Nickname must be between 2 and 16 characters long.");
-                return true;
-            }
-            if (!strippedNickname.matches("^[a-zA-Z0-9]+$")) {
-                sender.sendMessage("Nickname can only contain alphanumeric characters, without spaces.");
-                return true;
+
+            if (!sender.hasPermission("simplenick.bypass")) {
+                if (strippedNickname.length() < 2 || strippedNickname.length() > 16) {
+                    sender.sendMessage("Nickname must be between 2 and 16 characters long.");
+                    return true;
+                }
+                if (!strippedNickname.matches("^[a-zA-Z0-9]+$")) {
+                    sender.sendMessage("Nickname can only contain alphanumeric characters, without spaces.");
+                    return true;
+                }
+                if (!colorsEnabled) {
+                    nickname = strippedNickname;  // Remove color if colors are disabled
+                }
             }
 
-            // Apply color codes only if colors are enabled
-            String finalNickname = colorsEnabled ? ChatColor.translateAlternateColorCodes('&', nickname) : strippedNickname;
+            String finalNickname = ChatColor.translateAlternateColorCodes('&', nickname);
             target.setDisplayName(finalNickname);
             target.setPlayerListName(finalNickname);
             target.sendMessage("Your nickname has been changed to: " + finalNickname);
