@@ -1,12 +1,15 @@
 name: SimpleNick
 main: com.dark.simplenick.SimpleNick
-version: 1.2
+version: 1.0
 commands:
   nick:
     description: Change your nickname or reset it.
   nickreload:
     description: Reloads the SimpleNick configuration.
     permission: simplenick.reload
+  nickhelp:
+    description: Show help for SimpleNick commands.
+    permission: simplenick.help
 permissions:
   simplenick.use:
     description: Allows a player to use /nick.
@@ -17,3 +20,9 @@ permissions:
   simplenick.reload:
     description: Allows a player to reload the SimpleNick configuration.
     default: op
+  simplenick.bypass:
+    description: Allows a player to bypass nickname length and color restrictions.
+    default: op
+  simplenick.help:
+    description: Allows a player to use /nickhelp.
+    default: true
