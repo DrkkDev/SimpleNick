@@ -4,7 +4,7 @@
 
     <groupId>com.dark.simplenick</groupId>
     <artifactId>SimpleNick</artifactId>
-    <version>1.2</version>
+    <version>1.0</version>
     <packaging>jar</packaging>
 
     <name>SimpleNick</name>
